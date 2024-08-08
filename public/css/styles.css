@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  #app {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  input, textarea {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin: 10px 0;
+  }
+  
+  #posts {
+    margin-top: 20px;
+  }
+  
+  .post {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+  }
+  

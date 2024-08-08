@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps with Bootstrap</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #map {
+            height: 500px;
+            opacity: 0.9; /* Ajustar opacidad */
+        }
+        body {
+            background-color: #f0f0f0;
+            padding-top: 56px; /* Altura de la navbar fija */
+        }
+        .navbar {
+            background: linear-gradient(45deg, #6a0dad, #b19cd9); /* Fondo degradado */
+        }
+        .navbar .nav-link, .navbar .navbar-brand {
+            color: #ffffff;
+        }
+        .navbar .nav-link:hover, .navbar .navbar-brand:hover {
+            color: #d3d3d3;
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+        .card {
+            margin-bottom: 1rem;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .info-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .header {
+            background-image: url('./css/images/header.webp'); /* Ruta de la imagen */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            padding-top: 66.67%; /* Proporción áurea 2:3 */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 15px; /* Bordes redondeados */
+            overflow: hidden; /* Para asegurar que la imagen se recorte correctamente */
+            margin-bottom: 20px; /* Espacio debajo del encabezado */
+        }
+        .header h1 {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        .card-title, .card-text, .btn {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <a class="navbar-brand" href="#">Encuentra lomito</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Inicio de sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Saber más</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="header">
+           
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="info-section">
+            <p>Bienvenido al proyecto PetChips. Este mapa muestra las veterinarias que ya cuentan con los chips de identificación para mascotas. El objetivo del proyecto es asegurar que todas las mascotas puedan ser fácilmente identificadas y sus dueños contactados en caso de extravío.</p>
+        </div>
+
+        <div id="map" class="mt-4"></div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zona Centro</h5>
+                <p class="card-text" id="centro-list"></p>
+                <button class="btn btn-primary" onclick="showZone('centro'); return false;">Ver veterinarias</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zona Sur</h5>
+                <p class="card-text" id="sur-list"></p>
+                <button class="btn btn-primary" onclick="showZone('sur'); return false;">Ver veterinarias</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zona Norte</h5>
+                <p class="card-text" id="norte-list"></p>
+                <button class="btn btn-primary" onclick="showZone('norte'); return false;">Ver veterinarias</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zona Este</h5>
+                <p class="card-text" id="este-list"></p>
+                <button class="btn btn-primary" onclick="showZone('este'); return false;">Ver veterinarias</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Zona Oeste</h5>
+                <p class="card-text" id="oeste-list"></p>
+                <button class="btn btn-primary" onclick="showZone('oeste'); return false;">Ver veterinarias</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let markers = [];
+
+        const locations = {
+            centro: [
+                { lat: 19.427020, lng: -99.167668, title: 'Veterinaria Centro 1' },
+                { lat: 19.432280, lng: -99.142470, title: 'Veterinaria Centro 2' }
+            ],
+            sur: [
+                { lat: 19.305799, lng: -99.138667, title: 'Veterinaria Sur 1' },
+                { lat: 19.295214, lng: -99.166741, title: 'Veterinaria Sur 2' }
+            ],
+            norte: [
+                { lat: 19.508145, lng: -99.034186, title: 'Veterinaria Norte 1' },
+                { lat: 19.479899, lng: -99.180123, title: 'Veterinaria Norte 2' }
+            ],
+            este: [
+                { lat: 19.362849, lng: -99.012891, title: 'Veterinaria Este 1' },
+                { lat: 19.362101, lng: -99.044320, title: 'Veterinaria Este 2' }
+            ],
+            oeste: [
+                { lat: 19.420570, lng: -99.239861, title: 'Veterinaria Oeste 1' },
+                { lat: 19.425499, lng: -99.190047, title: 'Veterinaria Oeste 2' }
+            ]
+        };
+
+        function initMap() {
+            const center = { lat: 19.432608, lng: -99.133209 }; // Ciudad de México
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: center
+            });
+
+            // Mostrar todos los marcadores por defecto
+            for (const zone in locations) {
+                showMarkers(zone);
+            }
+        }
+
+        function showMarkers(zone) {
+            // Agregar nuevos marcadores
+            locations[zone].forEach(function(location, index) {
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: location,
+                    title: location.title,
+                    id: `marker-${zone}-${index}`
+                });
+                markers.push(marker);
+            });
+
+            // Mostrar la lista de nombres de veterinarias con enlaces
+            document.getElementById(`${zone}-list`).innerHTML = locations[zone].map((loc, index) => `<a href="#" onclick="focusMarker('${zone}', ${index}); return false;">${loc.title}</a>`).join('<br>');
+        }
+
+        function showZone(zone) {
+            // Mostrar la lista de nombres de veterinarias con enlaces
+            document.getElementById(`${zone}-list`).innerHTML = locations[zone].map((loc, index) => `<a href="#" onclick="focusMarker('${zone}', ${index}); return false;">${loc.title}</a>`).join('<br>');
+        }
+
+        function focusMarker(zone, index) {
+            const location = locations[zone][index];
+            map.setCenter(location);
+            map.setZoom(15); // Zoom in para enfocar mejor el marcador
+            markers.forEach(marker => {
+                if (marker.id === `marker-${zone}-${index}`) {
+                    // Opcional: Añadir un bounce o algún efecto al marcador enfocado
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                    setTimeout(() => marker.setAnimation(null), 1400); // Detener la animación después de un tiempo
+                }
+            });
+
+            // Desplazar la vista al mapa
+            const mapElement = document.getElementById('map');
+            mapElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        window.initMap = initMap;
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiVtEXlalEcCa6yqcFl8YVgUrjFJS3jqw&callback=initMap" async defer></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.amazonaws.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

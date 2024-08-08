@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Chip</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Register Chip</h1>
+
+  <div id="auth-section">
+    <h2>Registrarse</h2>
+    <input type="text" id="register-username" placeholder="Username">
+    <input type="password" id="register-password" placeholder="Password">
+    <button onclick="register()">Registrar</button>
+
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="login-username" placeholder="Username">
+    <input type="password" id="login-password" placeholder="Password">
+    <button onclick="login()">Iniciar Sesión</button>
+  </div>
+
+  <div id="next-section" style="display: none;">
+    <button onclick="showRegisterForm()">Siguiente</button>
+  </div>
+
+  <div id="register-section" style="display: none;">
+    <form id="registration-form">
+      <input type="hidden" id="chip-id">
+      <input type="text" id="owner-name" placeholder="Owner Name">
+      <input type="text" id="contact-info" placeholder="Contact Info">
+      <button type="button" id="register-button" onclick="registerChip()" disabled>Register</button>
+    </form>
+  </div>
+
+  <script src="js/scripts.js"></script>
+</body>
+</html>

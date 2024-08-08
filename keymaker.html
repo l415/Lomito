@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Keys</title>
+</head>
+<body>
+    <h1>Generate Chip Keys</h1>
+    <button id="generateKeysBtn">Generate Keys</button>
+
+    <script>
+        function generateRandomKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = '';
+            for (let i = 0; i < 15; i++) {
+                if (i === 4 || i === 9) {
+                    key += '-';
+                }
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return key;
+        }
+
+        function generateUniqueKeysArray(n) {
+            const keysSet = new Set();
+            while (keysSet.size < n) {
+                const key = generateRandomKey();
+                keysSet.add(key);
+            }
+            const keysArray = [];
+            keysSet.forEach(key => {
+                const route = `/details/${key}`;
+                keysArray.push({ chipId: key, route });
+            });
+            return keysArray;
+        }
+
+        function downloadTextFile(content, fileName) {
+            const blob = new Blob([content], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        async function generateChips() {
+            const numberOfKeys = 10000;
+            const keysArray = generateUniqueKeysArray(numberOfKeys);
+            const keysText = JSON.stringify(keysArray, null, 2);
+            downloadTextFile(keysText, 'keys.json');
+        }
+
+        document.getElementById('generateKeysBtn').addEventListener('click', () => {
+            generateChips();
+        });
+    </script>
+</body>
+</html>
